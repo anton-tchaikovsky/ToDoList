@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="to_do_list">
+        <item>Сделать полки</item>
+        <item>Навести порядок на участке</item>
+        <item>Навести порядок в веранде</item>
+        <item>Отремонтировать пол</item>
+        <item>Вывести мусор</item>
+    </string-array>
+
+
+<string-array name="description">
+    <item>Две длинные полки над столешницей, две короткие полки под раковиной, две короткие полки в ванной</item>
+    <item>Покосить траву, разнести вещи по своим местам </item>
+    <item>Составить посуду, разобрать сервант и диван</item>
+    <item>Поднять старые доски, усилить лаги, постелить доски</item>
+    <item>Сформировать пакеты с мусором: отдельно металл, пластик и прочий мусор. Вывести на помойку</item>
+</string-array>
+
+    <string-array name="date_description">
+        <item>2022-07-28</item>
+        <item>2022-07-30 </item>
+        <item>2022-08-03</item>
+        <item>2022-08-06</item>
+        <item>2022-08-08</item>
+    </string-array>
+</resources>
+
