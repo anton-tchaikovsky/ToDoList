@@ -1,20 +1,22 @@
 package com.example.todolist;
 
-import static com.example.todolist.ToDoListFragment.INDEX;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-
+// НЕ ИСПОЛЬЗУЕТСЯ
 public class PortActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_port);
 
+/*
         // При переходе в ландшафтный экран активити закрывается
         if (getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE){
             finish();
@@ -29,6 +31,8 @@ public class PortActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container_description, DescriptionFragment.newInstance(getIntent().getExtras().getInt (INDEX)))
                     .replace(R.id.fragment_container_calendar, CalendarFragment.newInstance(getIntent().getExtras().getInt (INDEX)))
                     .commit();
-        }
+        }*/
     }
+
+
 }

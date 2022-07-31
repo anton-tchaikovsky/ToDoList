@@ -14,7 +14,7 @@ public class ToDoListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.to_do_list_activity_main);
-        descriptionsArrayList = DescriptionsArrayList.getInstance(this);// при первом запуске приложения создаем List заметок с исходной информацией из ресурвов array_to_do_list
+        //descriptionsArrayList = DescriptionsArrayList.getInstance(this);// при первом запуске приложения создаем List заметок с исходной информацией из ресурвов array_to_do_list
 
         // при первом запуске активизируем фрагмент ToDoListFragment()
         if (savedInstanceState == null){
@@ -23,7 +23,6 @@ public class ToDoListActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, new ToDoListFragment())
                     .commit();
         }
-
     }
 
     @Override
@@ -34,7 +33,7 @@ public class ToDoListActivity extends AppCompatActivity {
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        descriptionsArrayList = savedInstanceState.getParcelable(KEY_ARRAY_LIST);// получаем сохраненный List заметок
+        descriptionsArrayList = savedInstanceState.getParcelable(KEY_ARRAY_LIST);
         super.onRestoreInstanceState(savedInstanceState);
     }
 }

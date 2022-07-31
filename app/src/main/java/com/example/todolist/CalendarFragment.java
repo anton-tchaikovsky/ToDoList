@@ -1,9 +1,11 @@
 package com.example.todolist;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -24,7 +26,9 @@ public class CalendarFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String INDEX = "index";
+    private static final String DATE = "date";
+    private Description description;
+    private Description descriptionParcelable;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -68,15 +72,18 @@ public class CalendarFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_calendar, container, false);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle argument = getArguments(); // получаем сохраненный индекс
+        Bundle argument = getArguments(); // получаем сохраненный объект
         if (argument!=null){
-            int index = argument.getInt(INDEX);
+            descriptionParcelable = argument.getParcelable(DATE);
+            DescriptionsArrayList descriptionsArrayList = DescriptionsArrayList.getInstance(requireContext());
+            description = descriptionsArrayList.getDescriptionArrayList().stream().filter(n -> n.getId() == descriptionParcelable.getId()).findFirst().get();
             DatePicker calendar = view.findViewById(R.id.calendar);
-            Calendar date = DescriptionsArrayList.getInstance(requireContext()).getDate(index);
-            // выставляем исходную дату в  DatePicker
+            Calendar date = description.getDate();
+            // выставляем исходную дату в DatePicker
             calendar.init(date.get(Calendar.YEAR), date.get (Calendar.MONTH), date.get (Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
                 @Override
                         // изменяем дату заметки по нажатию
@@ -87,11 +94,11 @@ public class CalendarFragment extends Fragment {
         }
     }
 
-    public static CalendarFragment newInstance(int index) {
+    public static CalendarFragment newInstance(Description description) {
         CalendarFragment fragment = new CalendarFragment();
         Bundle args = new Bundle();
-        args.putInt(INDEX, index);
-        fragment.setArguments(args);// привязываем к CalendarFragment Bundle с сохраненным индексом (переданным из ToDoListFragment)
+        args.putParcelable(DATE, description);
+        fragment.setArguments(args);// привязываем к CalendarFragment Bundle с сохраненным объектом Description
         return fragment;
     }
 }

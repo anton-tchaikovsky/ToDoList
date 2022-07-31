@@ -2,4 +2,9 @@
     <string name="app_name">ToDoList</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="calendar">Календарь</string>
+    <string name="hideCalendar">Скрыть календарь</string>
+    <string name="Back">Назад</string>
+    <string name="set_description_name">Введите название заметки</string>
+    <string name="set_description">Введите текст заметки</string>
 </resources>

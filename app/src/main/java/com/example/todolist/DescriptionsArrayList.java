@@ -15,7 +15,7 @@ import java.util.Objects;
 public class DescriptionsArrayList implements Parcelable {
     private static DescriptionsArrayList INSTANCE;
     ArrayList <Description> descriptionArrayList;// хранит объекты заметок
-    private final SimpleDateFormat formatter; // испоьзуется для работы с полем date заметки
+    private final SimpleDateFormat formatter; // используется для работы с полем date заметки
 
     /**
      * Конструктор впервые создает List заметок с исходной информацией из ресурвов array_to_do_list
@@ -63,16 +63,12 @@ public class DescriptionsArrayList implements Parcelable {
         return INSTANCE;
     }
 
-    public String getName (int index){
-        return descriptionArrayList.get(index).getName();
+    public ArrayList<Description> getDescriptionArrayList() {
+        return descriptionArrayList;
     }
 
-    public String getDescription (int index){
-        return descriptionArrayList.get(index).getDescription();
-    }
-
-    public Calendar getDate (int index){
-        return descriptionArrayList.get(index).getDate();
+    public Description getDescription (int index){
+        return descriptionArrayList.get(index);
     }
 
     public int size() {
