@@ -26,19 +26,12 @@
         android:inputType="textMultiLine"
         android:gravity="top"
         android:importantForAutofill="no" />
-
-    <Button
-        android:id="@+id/back"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/Back"/>
-
     <Button
         android:id="@+id/get_calendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/calendar"/>
-
+    
 
     <FrameLayout
         android:id="@+id/fragment_container_calendar"

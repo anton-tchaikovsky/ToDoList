@@ -1,7 +1,5 @@
 package com.example.todolist;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +10,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 
@@ -30,8 +30,10 @@ public class ToDoListFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String CURRENT_DESCRIPTION = "current_description";
-    public static final String INDEX = "index";
-    private int currentPosition = 0;
+    private Description currentDescription;
+    View dataContainer;
+    //DescriptionsArrayList descriptionsArrayList;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -39,6 +41,7 @@ public class ToDoListFragment extends Fragment {
 
     public ToDoListFragment() {
         // Required empty public constructor
+
     }
 
     /**
@@ -80,15 +83,19 @@ public class ToDoListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // если заметки просматривались, получаем инжекс последней просмотренной заметки
+        // если заметки просматривались, получаем индекс последней просмотренной заметки
         if (savedInstanceState != null){
-            currentPosition=savedInstanceState.getInt(CURRENT_DESCRIPTION,0);
+            currentDescription=savedInstanceState.getParcelable(CURRENT_DESCRIPTION);
         }
-        initList(view);
+        dataContainer = view.findViewById(R.id.data_container);
+        initList(dataContainer);
         // в ландшафтной ориентации сразу отображаем необходимые фрагменты
-        if (isLandscape())
-            showDescriptionLand(currentPosition);
-
+        if (isLandscape()){
+            if (currentDescription == null)
+                showDescriptionLand(Description.getDescriptionArrayList().get(0));
+            else
+                showDescriptionLand(currentDescription);
+        }
     }
 
     /**
@@ -97,11 +104,11 @@ public class ToDoListFragment extends Fragment {
      */
     private void initList (View view){
         LinearLayout layoutView = (LinearLayout) view;
-        DescriptionsArrayList descriptionArrayList = DescriptionsArrayList.getInstance(this.requireContext());
-
-        for (int i = 0; i< descriptionArrayList.size(); i++){
+        layoutView.removeAllViews();
+        for (int i = 0; i< Description.getDescriptionArrayList().size(); i++){
+            Description description = Description.getDescriptionArrayList().get(i);
             TextView textView = new TextView(getContext());
-            textView.setText(descriptionArrayList.getName(i));
+            textView.setText(description.getName());
             if (isLandscape())
                 textView.setTextSize(15);
             else
@@ -112,51 +119,74 @@ public class ToDoListFragment extends Fragment {
                 textView.setTypeface(getResources().getFont(R.font.font_times_new_roman));
             }
             layoutView.addView(textView);
-            final int index = i;
+            initPopup (textView, description);
             // отработка нажатия на заметку
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    currentPosition = index;
-                    showDescription (index);
-                }
+
+            textView.setOnClickListener(view1 -> {
+                currentDescription = description;
+                showDescription (description);
             });
         }
     }
+    public void initList (){
+        initList(dataContainer);
+    }
 
-    /**
-     * Метод активирует фрагменты DescriptionFragment и CalendarFragment в ландшафтном экране
-     * @param index
-     */
-    private void showDescriptionLand (int index) {
-        DescriptionFragment descriptionFragment = DescriptionFragment.newInstance(index);
-        CalendarFragment calendarFragment = CalendarFragment.newInstance(index);//TODO
+    private void initPopup(View view, Description description){
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(requireActivity(),view);
+                requireActivity().getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()){
+                            case R.id.popup:
+                                Description.getDescriptionArrayList().remove(description);
+                                initList();
+                                break;
+                            case R.id.popupAll:
+                                //Description.getDescriptionArrayList().clear(); TODO доделать удаление
+                                //initList();
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                popupMenu.show();
+                return true;
+            }
+        });
+
+    }
+
+    private void showDescriptionLand (Description description) {
+        DescriptionFragment descriptionFragment = DescriptionFragment.newInstance(description);
         requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container_description, descriptionFragment)
-                .replace(R.id.fragment_container_calendar, calendarFragment)//TODO
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
     }
 
-    /**
-     * Метод запускает новую активити для отображения DescriptionFragment и CalendarFragment в портретном экране
-     * @param index
-     */
-    private void showDescriptionPort (int index) {
-        Activity activity = requireActivity();
-        final Intent intent = new Intent(activity, PortActivity.class);
-        intent.putExtra(INDEX, index);
-        activity.startActivity(intent);
+    private void showDescriptionPort (Description description) {
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, DescriptionFragment.newInstance(description))
+                .addToBackStack("")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
     }
 
-    private void showDescription(int index){
+    private void showDescription(Description description){
 
         if (isLandscape())
-            showDescriptionLand(index);
+            showDescriptionLand(description);
         else
-            showDescriptionPort(index);
+            showDescriptionPort(description);
     }
 
     private boolean isLandscape (){
@@ -165,7 +195,7 @@ public class ToDoListFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(CURRENT_DESCRIPTION, currentPosition); // сохраняем индекс последней текущей просматриваемой заметки
+        outState.putParcelable(CURRENT_DESCRIPTION, currentDescription); // сохраняем объект последней просматриваемой заметки
         super.onSaveInstanceState(outState);
     }
 }
