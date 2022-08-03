@@ -79,8 +79,8 @@ public class CalendarFragment extends Fragment {
         Bundle argument = getArguments(); // получаем сохраненный объект
         if (argument!=null){
             descriptionParcelable = argument.getParcelable(DATE);
-            DescriptionsArrayList descriptionsArrayList = DescriptionsArrayList.getInstance(requireContext());
-            description = descriptionsArrayList.getDescriptionArrayList().stream().filter(n -> n.getId() == descriptionParcelable.getId()).findFirst().get();
+           // DescriptionsArrayList descriptionsArrayList = DescriptionsArrayList.getInstance(requireContext());
+            description = Description.getDescriptionArrayList().stream().filter(n -> n.getId() == descriptionParcelable.getId()).findFirst().get();
             DatePicker calendar = view.findViewById(R.id.calendar);
             Calendar date = description.getDate();
             // выставляем исходную дату в DatePicker
@@ -88,7 +88,9 @@ public class CalendarFragment extends Fragment {
                 @Override
                         // изменяем дату заметки по нажатию
                 public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
-                    date.set(i, i1, i2);
+                    Calendar dateNew = Calendar.getInstance();
+                    dateNew.set(i, i1, i2);
+                    description.setDate(dateNew);
                 }
             });
         }

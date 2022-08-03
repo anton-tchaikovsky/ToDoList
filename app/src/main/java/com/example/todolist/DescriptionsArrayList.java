@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 
+/*
 public class DescriptionsArrayList implements Parcelable {
     private static DescriptionsArrayList INSTANCE;
     ArrayList <Description> descriptionArrayList;// хранит объекты заметок
@@ -20,7 +21,7 @@ public class DescriptionsArrayList implements Parcelable {
     /**
      * Конструктор впервые создает List заметок с исходной информацией из ресурвов array_to_do_list
      * @param context
-     */
+
     @SuppressLint("SimpleDateFormat")
     private DescriptionsArrayList(Context context) {
         this.descriptionArrayList = new ArrayList<>();
@@ -84,3 +85,4 @@ public class DescriptionsArrayList implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
     }
 }
+*/

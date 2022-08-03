@@ -10,9 +10,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 
@@ -29,7 +31,8 @@ public class ToDoListFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final String CURRENT_DESCRIPTION = "current_description";
     private Description currentDescription;
-    DescriptionsArrayList descriptionsArrayList;
+    View dataContainer;
+    //DescriptionsArrayList descriptionsArrayList;
 
 
     // TODO: Rename and change types of parameters
@@ -84,11 +87,12 @@ public class ToDoListFragment extends Fragment {
         if (savedInstanceState != null){
             currentDescription=savedInstanceState.getParcelable(CURRENT_DESCRIPTION);
         }
-        initList(view);
+        dataContainer = view.findViewById(R.id.data_container);
+        initList(dataContainer);
         // в ландшафтной ориентации сразу отображаем необходимые фрагменты
         if (isLandscape()){
-            if (savedInstanceState == null)
-                showDescriptionLand(descriptionsArrayList.getDescription(0));
+            if (currentDescription == null)
+                showDescriptionLand(Description.getDescriptionArrayList().get(0));
             else
                 showDescriptionLand(currentDescription);
         }
@@ -100,9 +104,9 @@ public class ToDoListFragment extends Fragment {
      */
     private void initList (View view){
         LinearLayout layoutView = (LinearLayout) view;
-        descriptionsArrayList = DescriptionsArrayList.getInstance(requireContext());
-        for (int i = 0; i< descriptionsArrayList.size(); i++){
-            Description description = descriptionsArrayList.getDescription(i);
+        layoutView.removeAllViews();
+        for (int i = 0; i< Description.getDescriptionArrayList().size(); i++){
+            Description description = Description.getDescriptionArrayList().get(i);
             TextView textView = new TextView(getContext());
             textView.setText(description.getName());
             if (isLandscape())
@@ -115,30 +119,47 @@ public class ToDoListFragment extends Fragment {
                 textView.setTypeface(getResources().getFont(R.font.font_times_new_roman));
             }
             layoutView.addView(textView);
-            //final int index = i;
+            initPopup (textView, description);
             // отработка нажатия на заметку
+
             textView.setOnClickListener(view1 -> {
                 currentDescription = description;
                 showDescription (description);
             });
         }
     }
+    public void initList (){
+        initList(dataContainer);
+    }
 
-    /*
-     * Метод активирует фрагменты DescriptionFragment и CalendarFragment в ландшафтном экране
-     * @param index
+    private void initPopup(View view, Description description){
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(requireActivity(),view);
+                requireActivity().getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()){
+                            case R.id.popup:
+                                Description.getDescriptionArrayList().remove(description);
+                                initList();
+                                break;
+                            case R.id.popupAll:
+                                //Description.getDescriptionArrayList().clear(); TODO доделать удаление
+                                //initList();
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                popupMenu.show();
+                return true;
+            }
+        });
 
-    private void showDescriptionLand (int index) {
-        DescriptionFragment descriptionFragment = DescriptionFragment.newInstance(index);
-        CalendarFragment calendarFragment = CalendarFragment.newInstance(index);
-        requireActivity()
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container_description, descriptionFragment)
-                .replace(R.id.fragment_container_calendar_land, calendarFragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit();
-    }*/
+    }
 
     private void showDescriptionLand (Description description) {
         DescriptionFragment descriptionFragment = DescriptionFragment.newInstance(description);
@@ -154,8 +175,7 @@ public class ToDoListFragment extends Fragment {
         requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, DescriptionFragment.newInstance(description))
-               // .replace(R.id.fragment_container_calendar_port,CalendarFragment.newInstance(description))
+                .add(R.id.fragment_container, DescriptionFragment.newInstance(description))
                 .addToBackStack("")
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
