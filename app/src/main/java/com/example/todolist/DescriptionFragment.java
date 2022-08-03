@@ -1,5 +1,6 @@
 package com.example.todolist;
 
+import android.app.AlertDialog;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,83 +13,98 @@ import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DescriptionFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.Optional;
+
 public class DescriptionFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    //private static final String INDEX = "index";
     private static final String DESCRIPTION = "description";
     private Description description;
     private Description descriptionParcelable;
+    private View viewDescriptionFragment;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public DescriptionFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DescriptionFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DescriptionFragment newInstance(String param1, String param2) {
-        DescriptionFragment fragment = new DescriptionFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
         if (savedInstanceState!=null)
             requireActivity().getSupportFragmentManager().popBackStack();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem itemMenuExit = menu.findItem(R.id.exit_add);
+        if (itemMenuExit!=null){
+            itemMenuExit.setVisible(false);
+        }
+        MenuItem itemMenuAbout = menu.findItem(R.id.about);
+        if (itemMenuAbout!=null){
+            itemMenuAbout.setVisible(false);
+        }
+        inflater.inflate(R.menu.remove_menu,menu);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+         if (item.getItemId() == R.id.remove) {
+             alertDialogRemove(description);
+             return true;
+         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private  void alertDialogRemove (Description description){
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Действительно удалить заметку?")
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    Description.getDescriptionArrayList().remove(description);
+                    snackBarRemove(viewDescriptionFragment,description.getName());
+                    update();
+                    if (!isLandscape())
+                        requireActivity().getSupportFragmentManager().popBackStack();
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
+
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_description, container, false);
+        if (savedInstanceState==null)
+            setHasOptionsMenu(true);
+        viewDescriptionFragment = inflater.inflate(R.layout.fragment_description, container, false);
+        return viewDescriptionFragment;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle arguments = getArguments();// получаем сохраненный индекс
+        Bundle arguments = getArguments();
         if (arguments != null){
             descriptionParcelable = arguments.getParcelable(DESCRIPTION);
-            DescriptionsArrayList descriptionsArrayList = DescriptionsArrayList.getInstance(requireContext());
-            description = descriptionsArrayList.getDescriptionArrayList().stream().filter(n ->n.getId() == descriptionParcelable.getId()).findFirst().get();
-            //description = descriptionsArrayList.getDescription(descriptionParcelable.getId()); Т.к. id соответствует индексу объекта в List, можно использовать данный подход
-            TextView textViewDescription = view.findViewById(R.id.description);
+
+            if (descriptionParcelable != null){
+                Optional<Description> selectedDescription = Description.getDescriptionArrayList().stream().filter(n -> n.getId() == descriptionParcelable.getId()).findFirst();
+                description = selectedDescription.orElseGet(() -> Description.getDescriptionArrayList().get(0));
+            }
+
+           TextView textViewDescription = view.findViewById(R.id.description);
             TextView textViewDescriptionName = view.findViewById(R.id.description_name);
             textViewDescription.setText(description.getDescription());
             textViewDescriptionName.setText (description.getName());
@@ -107,7 +123,8 @@ public class DescriptionFragment extends Fragment {
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    description.setName(charSequence.toString());
+                    description.setName( textViewDescriptionName.getText().toString());
+                    update();
                 }
 
                 @Override
@@ -163,6 +180,13 @@ public class DescriptionFragment extends Fragment {
 
     }
 
+   @RequiresApi(api = Build.VERSION_CODES.N)
+   private void update (){
+    ToDoListFragment toDoListFragment = (ToDoListFragment) requireActivity().getSupportFragmentManager().getFragments()
+            .stream().filter(fragment -> fragment instanceof ToDoListFragment).findFirst().get();
+       toDoListFragment.initList();
+   }
+
     public static DescriptionFragment newInstance (Description description){
         DescriptionFragment fragment = new DescriptionFragment();
         Bundle args = new Bundle();
@@ -173,6 +197,11 @@ public class DescriptionFragment extends Fragment {
 
     private boolean isLandscape (){
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    private void snackBarRemove (View view, String name){
+        Snackbar.make(view, name + " удалена", Snackbar.LENGTH_LONG)
+                .show();
     }
 
 }

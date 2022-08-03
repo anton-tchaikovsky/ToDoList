@@ -7,4 +7,19 @@
     <string name="Back">Назад</string>
     <string name="set_description_name">Введите название заметки</string>
     <string name="set_description">Введите текст заметки</string>
+    <string name="about">О приложении</string>
+    <string name="exit">Выйти</string>
+    <string name="about_add_in_detail">Приложение ToDoList разработано в рамках курса Android 1. Знакомство с платформой.</string>
+    <string name="ok">OK</string>
+    <string name="remove">Удалить</string>
+    <string name="notes">Мои заметки</string>
+    <string name="delete">Удалить заметку</string>
+    <string name="deleteAll">Удалить все заметки</string>
+    <string name="navigation_drawer_open">navigation_drawer_open</string>
+    <string name="navigation_drawer_close">navigation_drawer_close</string>
+    <string name="details">Подробнее</string>
+    <string name="change">Изменить заметку</string>
+    <string name="change_name">Изменить название заметки</string>
+    <string name="change_description">Изменить описание заметки</string>
+    <string name="change_date">Изменить дату заметки</string>
 </resources>

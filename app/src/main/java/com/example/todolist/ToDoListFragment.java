@@ -1,77 +1,39 @@
 package com.example.todolist;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import com.google.android.material.snackbar.Snackbar;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ToDoListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ToDoListFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private static final String CURRENT_DESCRIPTION = "current_description";
     private Description currentDescription;
-    DescriptionsArrayList descriptionsArrayList;
-
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ToDoListFragment() {
-        // Required empty public constructor
-
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BlankFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ToDoListFragment newInstance(String param1, String param2) {
-        ToDoListFragment fragment = new ToDoListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private View dataContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_to_do_list, container, false);
     }
 
@@ -84,11 +46,12 @@ public class ToDoListFragment extends Fragment {
         if (savedInstanceState != null){
             currentDescription=savedInstanceState.getParcelable(CURRENT_DESCRIPTION);
         }
-        initList(view);
+        dataContainer = view.findViewById(R.id.data_container);
+        initList(dataContainer);
         // в ландшафтной ориентации сразу отображаем необходимые фрагменты
         if (isLandscape()){
-            if (savedInstanceState == null)
-                showDescriptionLand(descriptionsArrayList.getDescription(0));
+            if (currentDescription == null)
+                showDescriptionLand(Description.getDescriptionArrayList().get(0));
             else
                 showDescriptionLand(currentDescription);
         }
@@ -100,9 +63,9 @@ public class ToDoListFragment extends Fragment {
      */
     private void initList (View view){
         LinearLayout layoutView = (LinearLayout) view;
-        descriptionsArrayList = DescriptionsArrayList.getInstance(requireContext());
-        for (int i = 0; i< descriptionsArrayList.size(); i++){
-            Description description = descriptionsArrayList.getDescription(i);
+        layoutView.removeAllViews();
+        for (int i = 0; i< Description.getDescriptionArrayList().size(); i++){
+            Description description = Description.getDescriptionArrayList().get(i);
             TextView textView = new TextView(getContext());
             textView.setText(description.getName());
             if (isLandscape())
@@ -115,7 +78,9 @@ public class ToDoListFragment extends Fragment {
                 textView.setTypeface(getResources().getFont(R.font.font_times_new_roman));
             }
             layoutView.addView(textView);
-            //final int index = i;
+            initPopup (textView, description);
+
+
             // отработка нажатия на заметку
             textView.setOnClickListener(view1 -> {
                 currentDescription = description;
@@ -123,22 +88,93 @@ public class ToDoListFragment extends Fragment {
             });
         }
     }
+    public void initList (){
+        initList(dataContainer);
+    }
 
-    /*
-     * Метод активирует фрагменты DescriptionFragment и CalendarFragment в ландшафтном экране
-     * @param index
+    private void initPopup(View view, Description description){
+        view.setOnLongClickListener(view1 -> {
+            PopupMenu popupMenu = new PopupMenu(requireActivity(), view1);
+            requireActivity().getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                switch (menuItem.getItemId()){
+                    case R.id.change_name:
+                        dialogFragmentName (description.getName(), "Введите новое название заметки");
+                        requireActivity().getSupportFragmentManager().setFragmentResultListener("KEY_NEW_NAME", getViewLifecycleOwner(), (requestKey, result) -> {
+                            description.setName(result.getString("NEW_NAME"));
+                            initList();// TODO устранить баг при повороте
+                        });
 
-    private void showDescriptionLand (int index) {
-        DescriptionFragment descriptionFragment = DescriptionFragment.newInstance(index);
-        CalendarFragment calendarFragment = CalendarFragment.newInstance(index);
-        requireActivity()
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container_description, descriptionFragment)
-                .replace(R.id.fragment_container_calendar_land, calendarFragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit();
-    }*/
+                        break;
+                    case R.id.change_description:
+                        dialogFragmentName (description.getDescription(), "Введите новое описание заметки");
+                        requireActivity().getSupportFragmentManager().setFragmentResultListener("KEY_NEW_NAME", getViewLifecycleOwner(), (requestKey, result) -> description.setDescription(result.getString("NEW_NAME")));
+                        // TODO доделать изменение в рантайме в ландшафтном представлении
+                        break;
+                    case R.id.change_date:
+                        dialogFragmentDate(description.getDate());
+                        requireActivity().getSupportFragmentManager().setFragmentResultListener("KEY_NEW_DATE", getViewLifecycleOwner(), (requestKey, result) -> description.setDate((Calendar) result.getSerializable("NEW_DATE")));
+                        // TODO доделать изменение в рантайме в ландшафтном представлении
+                        break;
+
+                    case R.id.popup:
+                        alertDialogRemove(view1, description);
+                        break;
+                    case R.id.popupAll:
+                        //Description.getDescriptionArrayList().clear(); TODO доделать удаление
+                        //initList();
+                        break;
+                }
+                return true;
+            });
+            popupMenu.show();
+            return true;
+        });
+
+    }
+
+
+    private void dialogFragmentName (String descriptionName, String title){
+        DialogFragmentName.newInstance(descriptionName, title).show(requireActivity().getSupportFragmentManager(), "DIALOG_FRAGMENT");
+    }
+
+    private void dialogFragmentDate (Calendar date){
+        DialogFragmentCalendar.newInstance(date).show(requireActivity().getSupportFragmentManager(), "DIALOG_FRAGMENT");
+    }
+
+    private void alertDialogRemove (View view, Description description){
+        View alertDialogRemove = getLayoutInflater().inflate(R.layout.alert_dialog_remove, null);
+        TextView textView = alertDialogRemove.findViewById(R.id.name);
+        textView.setText(description.getName());
+        Button button = alertDialogRemove.findViewById(R.id.details);
+        button.setOnClickListener(view1 -> {
+
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Snackbar.make(button, formatter.format(description.getDate().getTime()) + " " + description.getDescription(), Snackbar.LENGTH_INDEFINITE)
+                .setAction("OK", view11 -> {
+                })
+                .setTextMaxLines(5)
+                .show();
+        });
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Действительно удалить заметку?")
+                .setView(alertDialogRemove)
+                .setNegativeButton("Отмена", null)
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    Description.getDescriptionArrayList().remove(description);
+                    snackBarRemove(view, description.getName());
+                    initList();
+                })
+                .show();
+
+
+    }
+
+    private void snackBarRemove (View view, String name){
+        Snackbar.make(view, name + " удалена", Snackbar.LENGTH_LONG)
+                .show();
+    }
 
     private void showDescriptionLand (Description description) {
         DescriptionFragment descriptionFragment = DescriptionFragment.newInstance(description);
@@ -154,8 +190,7 @@ public class ToDoListFragment extends Fragment {
         requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, DescriptionFragment.newInstance(description))
-               // .replace(R.id.fragment_container_calendar_port,CalendarFragment.newInstance(description))
+                .add(R.id.fragment_container, DescriptionFragment.newInstance(description))
                 .addToBackStack("")
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
