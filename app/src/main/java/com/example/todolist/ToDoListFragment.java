@@ -7,8 +7,13 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +23,16 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class ToDoListFragment extends Fragment {
 
     private static final String CURRENT_DESCRIPTION = "current_description";
     private Description currentDescription;
-    private View dataContainer;
+    private RecyclerView recyclerView;
+    private ArrayList <Description> descriptionArrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,9 +42,49 @@ public class ToDoListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_to_do_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_to_do_list2, container, false);
+        recyclerView = view.findViewById(R.id.recycler_view);
+        descriptionArrayList = Description.getDescriptionArrayList();
+        initRecyclerView(recyclerView,descriptionArrayList);
+        return view;
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void initRecyclerView (RecyclerView recyclerView, ArrayList <Description> descriptionArrayList){
+        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        //recyclerView.setLayoutManager(linearLayoutManager);
+        ListAdapter listAdapter = new ListAdapter(descriptionArrayList, getContext());
+        recyclerView.setAdapter(listAdapter);
+
+        if (!isLandscape()){
+            @SuppressLint("UseRequireInsteadOfGet")
+            DividerItemDecoration itemDecoration = new
+                    DividerItemDecoration(Objects.requireNonNull(getContext()), LinearLayoutManager.VERTICAL);
+
+        itemDecoration.setDrawable(getResources().getDrawable(R.drawable.separator,
+                null));
+        recyclerView.addItemDecoration(itemDecoration);
+        }
+        listAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                currentDescription = Description.getDescriptionArrayList().get(position);
+                showDescription (currentDescription);
+            }
+        });
+        listAdapter.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onItemLongClick(View view, int position) {
+                initPopup(view,Description.getDescriptionArrayList().get(position));
+            }
+        });
+
+    }
+
+    public void initRecyclerView (){
+        initRecyclerView(recyclerView, descriptionArrayList);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -46,55 +94,19 @@ public class ToDoListFragment extends Fragment {
         if (savedInstanceState != null){
             currentDescription=savedInstanceState.getParcelable(CURRENT_DESCRIPTION);
         }
-        dataContainer = view.findViewById(R.id.data_container);
-        initList(dataContainer);
+
         // в ландшафтной ориентации сразу отображаем необходимые фрагменты
         if (isLandscape()){
-            if (currentDescription == null)
-                showDescriptionLand(Description.getDescriptionArrayList().get(0));
-            else
-                showDescriptionLand(currentDescription);
-        }
-    }
-
-    /**
-     * Метод создает и отображает заметки в фрагменте ToDoListFragment (общий для портретного и ландшафтного экранов)
-     * @param view
-     */
-    private void initList (View view){
-        LinearLayout layoutView = (LinearLayout) view;
-        layoutView.removeAllViews();
-        for (int i = 0; i< Description.getDescriptionArrayList().size(); i++){
-            Description description = Description.getDescriptionArrayList().get(i);
-            TextView textView = new TextView(getContext());
-            textView.setText(description.getName());
-            if (isLandscape())
-                textView.setTextSize(15);
-            else
-                textView.setTextSize(20);
-            textView.setTextColor(getResources().getColor(R.color.purple_700,  null));
-            textView.setBackgroundColor(getResources().getColor(R.color.white, null));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                textView.setTypeface(getResources().getFont(R.font.font_times_new_roman));
+            if (currentDescription == null){
+                currentDescription = Description.getDescriptionArrayList().get(0);
             }
-            layoutView.addView(textView);
-            initPopup (textView, description);
-
-
-            // отработка нажатия на заметку
-            textView.setOnClickListener(view1 -> {
-                currentDescription = description;
-                showDescription (description);
-            });
+            showDescriptionLand(currentDescription);
         }
     }
-    public void initList (){
-        initList(dataContainer);
-    }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void initPopup(View view, Description description){
-        view.setOnLongClickListener(view1 -> {
-            PopupMenu popupMenu = new PopupMenu(requireActivity(), view1);
+            PopupMenu popupMenu = new PopupMenu(requireActivity(), view);
             requireActivity().getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 switch (menuItem.getItemId()){
@@ -102,14 +114,18 @@ public class ToDoListFragment extends Fragment {
                         dialogFragmentName (description.getName(), "Введите новое название заметки");
                         requireActivity().getSupportFragmentManager().setFragmentResultListener("KEY_NEW_NAME", getViewLifecycleOwner(), (requestKey, result) -> {
                             description.setName(result.getString("NEW_NAME"));
-                            initList();// TODO устранить баг при повороте
+                            initRecyclerView(recyclerView, descriptionArrayList);// TODO устранить баг при повороте
+                            if (isLandscape()&&currentDescription==description)
+                                showDescriptionLand(description);
                         });
-
                         break;
                     case R.id.change_description:
                         dialogFragmentName (description.getDescription(), "Введите новое описание заметки");
-                        requireActivity().getSupportFragmentManager().setFragmentResultListener("KEY_NEW_NAME", getViewLifecycleOwner(), (requestKey, result) -> description.setDescription(result.getString("NEW_NAME")));
-                        // TODO доделать изменение в рантайме в ландшафтном представлении
+                        requireActivity().getSupportFragmentManager().setFragmentResultListener("KEY_NEW_NAME", getViewLifecycleOwner(), (requestKey, result) -> {
+                            description.setDescription(result.getString("NEW_NAME"));
+                            if (isLandscape()&&currentDescription==description)
+                                showDescriptionLand(description);
+                        });
                         break;
                     case R.id.change_date:
                         dialogFragmentDate(description.getDate());
@@ -118,21 +134,16 @@ public class ToDoListFragment extends Fragment {
                         break;
 
                     case R.id.popup:
-                        alertDialogRemove(view1, description);
+                        alertDialogRemove(view, description);
                         break;
                     case R.id.popupAll:
-                        //Description.getDescriptionArrayList().clear(); TODO доделать удаление
-                        //initList();
                         break;
                 }
                 return true;
             });
             popupMenu.show();
-            return true;
-        });
 
     }
-
 
     private void dialogFragmentName (String descriptionName, String title){
         DialogFragmentName.newInstance(descriptionName, title).show(requireActivity().getSupportFragmentManager(), "DIALOG_FRAGMENT");
@@ -142,6 +153,7 @@ public class ToDoListFragment extends Fragment {
         DialogFragmentCalendar.newInstance(date).show(requireActivity().getSupportFragmentManager(), "DIALOG_FRAGMENT");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void alertDialogRemove (View view, Description description){
         View alertDialogRemove = getLayoutInflater().inflate(R.layout.alert_dialog_remove, null);
         TextView textView = alertDialogRemove.findViewById(R.id.name);
@@ -162,12 +174,13 @@ public class ToDoListFragment extends Fragment {
                 .setView(alertDialogRemove)
                 .setNegativeButton("Отмена", null)
                 .setPositiveButton("OK", (dialogInterface, i) -> {
-                    Description.getDescriptionArrayList().remove(description);
+                    descriptionArrayList.remove(description);
                     snackBarRemove(view, description.getName());
-                    initList();
+                    initRecyclerView(recyclerView, descriptionArrayList);
+                    if (isLandscape()&&currentDescription==description)
+                        showDescriptionLand(descriptionArrayList.get(0));
                 })
                 .show();
-
 
     }
 
@@ -212,5 +225,9 @@ public class ToDoListFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putParcelable(CURRENT_DESCRIPTION, currentDescription); // сохраняем объект последней просматриваемой заметки
         super.onSaveInstanceState(outState);
+    }
+
+    public static ToDoListFragment newInstance() {
+        return new ToDoListFragment();
     }
 }

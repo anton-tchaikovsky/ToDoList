@@ -28,7 +28,7 @@ public class ToDoListActivity extends AppCompatActivity {
         if (savedInstanceState == null){
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.fragment_container, new ToDoListFragment())
+                    .add(R.id.fragment_container, ToDoListFragment.newInstance())
                     .commit();
         }
     }

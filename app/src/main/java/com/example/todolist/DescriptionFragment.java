@@ -30,6 +30,7 @@ public class DescriptionFragment extends Fragment {
     private Description description;
     private Description descriptionParcelable;
     private View viewDescriptionFragment;
+    private View dataContainer;
 
 
     @Override
@@ -94,6 +95,7 @@ public class DescriptionFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        dataContainer = view;
         Bundle arguments = getArguments();
         if (arguments != null) {
             descriptionParcelable = arguments.getParcelable(DESCRIPTION);
@@ -103,7 +105,7 @@ public class DescriptionFragment extends Fragment {
                 description = selectedDescription.orElseGet(() -> Description.getDescriptionArrayList().get(0));
             }
 
-            TextView textViewDescription = view.findViewById(R.id.description);
+           TextView textViewDescription = view.findViewById(R.id.description);
             TextView textViewDescriptionName = view.findViewById(R.id.description_name);
             textViewDescription.setText(description.getDescription());
             textViewDescriptionName.setText(description.getName());
@@ -158,7 +160,7 @@ public class DescriptionFragment extends Fragment {
 
         Button buttonCalendar = view.findViewById(R.id.get_calendar);
         buttonCalendar.setOnClickListener(new View.OnClickListener() {
-            boolean isGetCalendar = true;
+           boolean isGetCalendar = true;
 
             @Override
             public void onClick(View view) {
@@ -184,7 +186,7 @@ public class DescriptionFragment extends Fragment {
     private void update() {
         ToDoListFragment toDoListFragment = (ToDoListFragment) requireActivity().getSupportFragmentManager().getFragments()
                 .stream().filter(fragment -> fragment instanceof ToDoListFragment).findFirst().get();
-        toDoListFragment.initList();
+        toDoListFragment.initRecyclerView();
     }
 
     public static DescriptionFragment newInstance(Description description) {

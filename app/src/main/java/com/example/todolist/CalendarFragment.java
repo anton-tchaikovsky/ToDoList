@@ -48,8 +48,16 @@ public class CalendarFragment extends Fragment {
                 Calendar dateNew = Calendar.getInstance();
                 dateNew.set(i, i1, i2);
                 description.setDate(dateNew);
+                update ();
             });
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void update(){
+        ToDoListFragment toDoListFragment = (ToDoListFragment) requireActivity().getSupportFragmentManager().getFragments()
+                .stream().filter(fragment -> fragment instanceof ToDoListFragment).findFirst().get();
+        toDoListFragment.initRecyclerView();
     }
 
     public static CalendarFragment newInstance(Description description) {
