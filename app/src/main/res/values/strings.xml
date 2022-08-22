@@ -14,7 +14,7 @@
     <string name="remove">Удалить</string>
     <string name="notes">Мои заметки</string>
     <string name="delete">Удалить заметку</string>
-    <string name="deleteAll">Удалить все заметки</string>
+    <string name="delete_all">Удалить все заметки</string>
     <string name="navigation_drawer_open">navigation_drawer_open</string>
     <string name="navigation_drawer_close">navigation_drawer_close</string>
     <string name="details">Подробнее</string>
@@ -22,4 +22,5 @@
     <string name="change_name">Изменить название заметки</string>
     <string name="change_description">Изменить описание заметки</string>
     <string name="change_date">Изменить дату заметки</string>
+    <string name="add">Добавить заметку</string>
 </resources>

@@ -57,7 +57,7 @@ public class CalendarFragment extends Fragment {
     private void update(){
         ToDoListFragment toDoListFragment = (ToDoListFragment) requireActivity().getSupportFragmentManager().getFragments()
                 .stream().filter(fragment -> fragment instanceof ToDoListFragment).findFirst().get();
-        toDoListFragment.initRecyclerView();
+        toDoListFragment.updateItemRecyclerView();
     }
 
     public static CalendarFragment newInstance(Description description) {

@@ -9,7 +9,7 @@
         />
 
     <item
-        android:id="@+id/exit_add"
+        android:id="@+id/exit"
         android:icon="@drawable/exit"
         android:title="@string/exit"
         app:showAsAction="ifRoom"

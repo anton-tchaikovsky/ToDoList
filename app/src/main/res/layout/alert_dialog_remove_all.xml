@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/alert_dialog_remove_all"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/padding"
+    android:layout_marginBottom="@dimen/padding"
+    android:background="#55535C">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_weight="1"
+        android:src="@drawable/deletefile"
+        android:padding="@dimen/padding"
+        />
+
+    <TextView
+        android:id="@+id/delete_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:textSize="@dimen/ok"
+        android:layout_gravity="center"
+        android:textColor="#F10707"
+        android:gravity="center"
+        android:text="Действительно удалить все заметки?"
+        />
+
+
+</LinearLayout>

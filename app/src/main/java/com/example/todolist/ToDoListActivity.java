@@ -1,19 +1,14 @@
 package com.example.todolist;
 
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-
 import android.app.AlertDialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
-
 import com.google.android.material.navigation.NavigationView;
 
 public class ToDoListActivity extends AppCompatActivity {
@@ -77,7 +72,7 @@ public class ToDoListActivity extends AppCompatActivity {
                 case R.id.about:
                     showAboutApp();
                     return true;
-                case R.id.exit_add:
+                case R.id.exit:
                     finish();
                     return true;
             }
@@ -94,24 +89,4 @@ public class ToDoListActivity extends AppCompatActivity {
                 .commit();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu,menu);
-        return super.onCreateOptionsMenu(menu);
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        switch (id){
-            case R.id.about:
-                showAboutApp();
-                break;
-            case R.id.exit_add:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

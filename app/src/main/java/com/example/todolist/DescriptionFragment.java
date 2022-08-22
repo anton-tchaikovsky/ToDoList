@@ -30,8 +30,6 @@ public class DescriptionFragment extends Fragment {
     private Description description;
     private Description descriptionParcelable;
     private View viewDescriptionFragment;
-    private View dataContainer;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,18 +39,18 @@ public class DescriptionFragment extends Fragment {
             requireActivity().getSupportFragmentManager().popBackStack();
     }
 
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        MenuItem itemMenuExit = menu.findItem(R.id.exit_add);
-        if (itemMenuExit != null) {
-            itemMenuExit.setVisible(false);
-        }
-        MenuItem itemMenuAbout = menu.findItem(R.id.about);
-        if (itemMenuAbout != null) {
-            itemMenuAbout.setVisible(false);
-        }
-        inflater.inflate(R.menu.remove_menu, menu);
+       if (!isLandscape()){
+           MenuItem itemMenuExit = menu.findItem(R.id.add);
+           if (itemMenuExit != null) {
+               itemMenuExit.setVisible(false);
+           }
+           inflater.inflate(R.menu.remove_menu, menu);
+       }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -95,7 +93,6 @@ public class DescriptionFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dataContainer = view;
         Bundle arguments = getArguments();
         if (arguments != null) {
             descriptionParcelable = arguments.getParcelable(DESCRIPTION);
@@ -124,7 +121,15 @@ public class DescriptionFragment extends Fragment {
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    description.setName(textViewDescriptionName.getText().toString());
+                    if (textViewDescriptionName.getText().toString().equals(""))
+                        description.setName("");
+                    else{
+                        for (int j = 0; j<textViewDescriptionName.getText().toString().length(); j++)
+                            if (textViewDescriptionName.getText().toString().charAt(j)!=' ')
+                                description.setName(textViewDescriptionName.getText().toString());
+                            else if (j==textViewDescriptionName.getText().toString().length()-1)
+                                description.setName("");
+                    }
                     update();
                 }
 
@@ -142,7 +147,15 @@ public class DescriptionFragment extends Fragment {
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    description.setDescription(charSequence.toString());
+                    if (textViewDescription.getText().toString().equals(""))
+                        description.setDescription("");
+                    else{
+                        for (int j = 0; j<textViewDescription.getText().toString().length(); j++)
+                            if (textViewDescription.getText().toString().charAt(j)!=' ')
+                                description.setDescription(textViewDescription.getText().toString());
+                            else if (j==textViewDescription.getText().toString().length()-1)
+                                description.setDescription("");
+                    }
                 }
 
                 @Override
@@ -186,7 +199,7 @@ public class DescriptionFragment extends Fragment {
     private void update() {
         ToDoListFragment toDoListFragment = (ToDoListFragment) requireActivity().getSupportFragmentManager().getFragments()
                 .stream().filter(fragment -> fragment instanceof ToDoListFragment).findFirst().get();
-        toDoListFragment.initRecyclerView();
+        toDoListFragment.updateItemRecyclerView();
     }
 
     public static DescriptionFragment newInstance(Description description) {

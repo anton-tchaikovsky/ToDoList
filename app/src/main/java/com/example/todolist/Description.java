@@ -30,10 +30,9 @@ public class Description implements Parcelable {
 
     static {
         descriptionArrayList = new ArrayList<>();
-        for (int i = 0; i<5; i++){
-            descriptionArrayList.add(Description.getDescription(i));
+        descriptionArrayList.add(Description.newDescription());
         }
-    }
+
 
     public int getId() {
         return id;
@@ -46,9 +45,9 @@ public class Description implements Parcelable {
     }
 
     @SuppressLint("DefaultLocale")
-    public static Description getDescription (int index){
-       String name = String.format("Заметка %d", index+1);
-       String description = String.format("Описание заметки %d", index+1);
+    public static Description newDescription (){
+        String name = "";
+        String description = "";
        Calendar date = Calendar.getInstance();
        return  new Description(name, description, date);
     }

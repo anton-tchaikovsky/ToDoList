@@ -10,17 +10,21 @@
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout-land/to_do_list_activity_main.xml" value="0.18" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/activity_port.xml" value="0.18" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/alert_dialog_remove.xml" value="0.33" />
+        <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/alert_dialog_remove_all.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/drawer_header.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_about.xml" value="0.25" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_blank.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_calendar.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_description.xml" value="0.1" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_dialog_name.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_new_description.xml" value="0.2" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_to_do_list.xml" value="0.1" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/fragment_to_do_list2.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/title_description.xml" value="0.1" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/title_description2.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/to_do_list_activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/layout/to_do_list_activity_main.xml" value="0.18" />
+        <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/menu-land/main_menu.xml" value="0.20729166666666668" />
+        <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/menu/context_menu.xml" value="0.2" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/menu/drawer_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/menu/main_menu.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/user/Desktop/Java/ToDoList/app/src/main/res/menu/popup_menu.xml" value="0.20416666666666666" />

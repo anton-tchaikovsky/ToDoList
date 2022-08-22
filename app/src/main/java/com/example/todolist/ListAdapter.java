@@ -7,32 +7,40 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
-    private ArrayList <Description> descriptionArrayList;
+    private final ArrayList <Description> descriptionArrayList;
     private OnItemClickListener onItemClickListener;
-    private OnItemLongClickListener onItemLongClickListener;
-    private Context context;
+    private final Context context;
+    private final Fragment fragment;
+    private int menuPosition;
+
+    public int getMenuPosition() {
+        return menuPosition;
+    }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
-        this.onItemLongClickListener = onItemLongClickListener;
+    private void registerContextMenu (View itemView){
+        if (fragment !=null){
+            fragment.registerForContextMenu(itemView);
+        }
     }
 
-    public ListAdapter (ArrayList <Description> descriptionArrayList, Context context){
+    public ListAdapter (ArrayList <Description> descriptionArrayList, Fragment fragment, Context context){
         this.descriptionArrayList = descriptionArrayList;
         this.context = context;
+        this.fragment = fragment;
     }
 
     @NonNull
@@ -54,73 +62,62 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
 
     public class ViewHolder extends  RecyclerView.ViewHolder{
 
-        private TextView textView;
-        private Button button;
-        private ImageView imageView;
+        private final TextView textView;
         private TextView textDate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            registerContextMenu(itemView);
+
             textView = itemView.findViewById(R.id.textView);
-            if (!isLandscape()){
-                button = itemView.findViewById(R.id.details);
-                imageView = itemView.findViewById(R.id.image_view);
+            if (isPortrait()){
+                Button button = itemView.findViewById(R.id.details);
                 textDate = itemView.findViewById(R.id.textDate);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int position = getAdapterPosition();
-                        if (onItemClickListener !=null){
-                            onItemClickListener.onItemClick(textView, position);
-                        }
+                button.setOnClickListener(view -> {
+                    int position = getAdapterPosition();
+                    if (onItemClickListener !=null){
+                        onItemClickListener.onItemClick(textView, position);
                     }
                 });
 
-                imageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        int position = getAdapterPosition();
-                        if (onItemLongClickListener != null){
-                            onItemLongClickListener.onItemLongClick(textView,position);
-                        }
-                        return true;
-                    }
+                itemView.setOnLongClickListener(view -> {
+                    menuPosition = getLayoutPosition();
+                    itemView.showContextMenu();
+                    return true;
                 });
+
             } else{
-                textView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int position = getAdapterPosition();
-                        if (onItemClickListener !=null){
-                            onItemClickListener.onItemClick(textView, position);
-                        }
+                textView.setOnClickListener(view -> {
+                    int position = getAdapterPosition();
+                    if (onItemClickListener !=null){
+                        onItemClickListener.onItemClick(textView, position);
                     }
                 });
 
-                textView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        int position = getAdapterPosition();
-                        if (onItemLongClickListener != null){
-                            onItemLongClickListener.onItemLongClick(textView,position);
-                        }
-                        return true;
-                    }
-                });
+               textView.setOnLongClickListener(view -> {
+                   menuPosition = getLayoutPosition();
+                   itemView.showContextMenu();
+                   return true;
+
+               });
             }
 
         }
 
         public void setDescription (Description description){
-            textView.setText(description.getName());
-            if (!isLandscape()){
+            if (description.getName().equals(""))
+                textView.setText("Новая заметка");
+            else
+                textView.setText(description.getName());
+            if (isPortrait()){
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                 textDate.setText(formatter.format(description.getDate().getTime()));
             }
         }
 
-        private boolean isLandscape (){
-            return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        private boolean isPortrait (){
+            return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         }
     }
 

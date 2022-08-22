@@ -33,8 +33,16 @@ public class DialogFragmentName extends DialogFragment {
                 .setView(changeNameView)
                 .setPositiveButton("Сохранить", (dialogInterface, i) -> {
                 String newName = editText.getText().toString();
-                Bundle bundle = new Bundle();
-                bundle.putString("NEW_NAME", newName);
+                    Bundle bundle = new Bundle();
+                    if (newName.equals(""))
+                        bundle.putString("NEW_NAME", "");
+                    else{
+                        for (int j = 0; j<newName.length(); j++)
+                            if (newName.charAt(j)!=' ')
+                                bundle.putString("NEW_NAME", newName);
+                            else if (j==newName.length()-1)
+                                bundle.putString("NEW_NAME", "");
+                    }
                 requireActivity().getSupportFragmentManager().setFragmentResult("KEY_NEW_NAME", bundle);
                 dismiss();
                 })

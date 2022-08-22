@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/change"
         android:title="@string/change">
@@ -20,17 +19,12 @@
     </item>
 
     <item
-    android:id="@+id/popup"
-    android:title="@string/delete"
-    />
-
-    <item
-        android:id="@+id/popupAll"
-        android:title="@string/delete_all"
+        android:id="@+id/delete"
+        android:title="@string/delete"
         />
 
     <item
-        android:id="@+id/add"
-        android:title="@string/add"
+        android:id="@+id/delete_all"
+        android:title="@string/delete_all"
         />
 </menu>
