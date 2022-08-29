@@ -24,7 +24,8 @@ public class DialogFragmentCalendar extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
        Bundle argument = getArguments();
        if (argument!=null)
-            date = (Calendar) argument.getSerializable("DATE");
+            date = (Calendar) argument.getSerializable("DATE");//текущая дата заметки
+        //надуваем view с календарем DatePicker
         View calendarView = getLayoutInflater().inflate(R.layout.fragment_calendar, null);
         DatePicker calendar = calendarView.findViewById(R.id.calendar);
         // изменяем дату заметки по нажатию
@@ -36,6 +37,7 @@ public class DialogFragmentCalendar extends DialogFragment {
                 .setPositiveButton("Сохранить", (dialogInterface, i) -> {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("NEW_DATE", date);
+                    //записываем результат
                     requireActivity().getSupportFragmentManager().setFragmentResult("KEY_NEW_DATE", bundle);
                     dismiss();
                 })

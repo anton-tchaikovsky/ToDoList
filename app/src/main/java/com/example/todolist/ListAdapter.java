@@ -23,6 +23,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
     private final Fragment fragment;
     private int menuPosition;
 
+    //метод возвращает номер элемента текущей карточки в recyclerView
     public int getMenuPosition() {
         return menuPosition;
     }
@@ -31,6 +32,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
         this.onItemClickListener = onItemClickListener;
     }
 
+    //метод создает контекстное меню в фрагменте, в котором создан ListAdapter, и вешает его на itemView
     private void registerContextMenu (View itemView){
         if (fragment !=null){
             fragment.registerForContextMenu(itemView);
@@ -46,15 +48,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-       View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.title_description,parent,false);
-        return new ViewHolder(v);
+        //надувае view карточки и создаем ViewHolder(view)
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.title_description,parent,false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        //заполняем карточки из ArrayList
         holder.setDescription(descriptionArrayList.get(position));
     }
 
+
+    //устанавливаем количество карточек
     @Override
     public int getItemCount() {
         return descriptionArrayList.size();
@@ -68,12 +74,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+           //создаем контекстное меню и вешаем его на view карточки
             registerContextMenu(itemView);
 
+            //находим текстовое поле для названия заметки
             textView = itemView.findViewById(R.id.textView);
+
+            //в портретной ориентации настраиваем кнопку "подробнее" и клик контекстного меню, находим текстовое поле для даты заметки
             if (isPortrait()){
-                Button button = itemView.findViewById(R.id.details);
                 textDate = itemView.findViewById(R.id.textDate);
+                Button button = itemView.findViewById(R.id.details);
                 button.setOnClickListener(view -> {
                     int position = getAdapterPosition();
                     if (onItemClickListener !=null){
@@ -87,7 +97,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
                     return true;
                 });
 
-            } else{
+            }
+            //в портретной ориентации настраиваем клик и клик контекстного меню
+            else{
                 textView.setOnClickListener(view -> {
                     int position = getAdapterPosition();
                     if (onItemClickListener !=null){
@@ -105,6 +117,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
 
         }
 
+        //метод заполняет поля карточки (название заметки и дата) данными из заметки
         public void setDescription (Description description){
             if (description.getName().equals(""))
                 textView.setText("Новая заметка");

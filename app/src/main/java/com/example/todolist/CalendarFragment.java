@@ -39,7 +39,7 @@ public class CalendarFragment extends Fragment {
         Bundle argument = getArguments(); // получаем сохраненный объект
         if (argument!=null){
             descriptionParcelable = argument.getParcelable(DATE);
-            description = Description.getDescriptionArrayList().stream().filter(n -> n.getId() == descriptionParcelable.getId()).findFirst().get();
+            description = ToDoListFragment.getSharedDescriptionArrayList().stream().filter(n -> n.getId() == descriptionParcelable.getId()).findFirst().get();
             DatePicker calendar = view.findViewById(R.id.calendar);
             Calendar date = description.getDate();
             // выставляем исходную дату в DatePicker
@@ -57,7 +57,7 @@ public class CalendarFragment extends Fragment {
     private void update(){
         ToDoListFragment toDoListFragment = (ToDoListFragment) requireActivity().getSupportFragmentManager().getFragments()
                 .stream().filter(fragment -> fragment instanceof ToDoListFragment).findFirst().get();
-        toDoListFragment.updateItemRecyclerView();
+        toDoListFragment.itemChanged();
     }
 
     public static CalendarFragment newInstance(Description description) {

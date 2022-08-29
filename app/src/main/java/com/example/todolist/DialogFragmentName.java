@@ -20,9 +20,10 @@ public class DialogFragmentName extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Bundle arguments = getArguments();
         if (arguments != null){
-            descriptionName = arguments.getString("DESCRIPTION_NAME");
-            title = arguments.getString("TITLE");
+            descriptionName = arguments.getString("DESCRIPTION_NAME");// текущее название или описание заметки
+            title = arguments.getString("TITLE");//title для диалога
         }
+        // надуваем view с полем для ввода названия или описания заметки
         View changeNameView = getLayoutInflater().inflate(R.layout.fragment_dialog_name,null);
         EditText editText = changeNameView.findViewById(R.id.new_name);
         editText.setText(descriptionName);
@@ -34,6 +35,7 @@ public class DialogFragmentName extends DialogFragment {
                 .setPositiveButton("Сохранить", (dialogInterface, i) -> {
                 String newName = editText.getText().toString();
                     Bundle bundle = new Bundle();
+                    // если назввние или описание заметки не введено или введены пробелы, то в заметке сохраняем ""
                     if (newName.equals(""))
                         bundle.putString("NEW_NAME", "");
                     else{
@@ -43,6 +45,7 @@ public class DialogFragmentName extends DialogFragment {
                             else if (j==newName.length()-1)
                                 bundle.putString("NEW_NAME", "");
                     }
+                    //записываем результат
                 requireActivity().getSupportFragmentManager().setFragmentResult("KEY_NEW_NAME", bundle);
                 dismiss();
                 })

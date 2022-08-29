@@ -21,13 +21,15 @@ public class AboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // надуваем макет для отображения информации о приложении
         return inflater.inflate(R.layout.fragment_about, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-         Button buttonOk = view.findViewById(R.id.about_ok);
+        // настраиваем кнопку для закрытия фрагмента AboutFragment через popBackStack()
+        Button buttonOk = view.findViewById(R.id.about_ok);
         buttonOk.setOnClickListener(view1 -> requireActivity().getSupportFragmentManager().popBackStack());
     }
 }

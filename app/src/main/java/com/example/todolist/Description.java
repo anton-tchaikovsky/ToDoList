@@ -1,10 +1,9 @@
 package com.example.todolist;
 
-import android.annotation.SuppressLint;
+
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.util.ArrayList;
+import androidx.annotation.Nullable;
 import java.util.Calendar;
 
 public class Description implements Parcelable {
@@ -14,25 +13,14 @@ public class Description implements Parcelable {
     private Calendar date;
     private int id;
     private static int count;
-    private static final ArrayList <Description> descriptionArrayList;
 
     public void setDate(Calendar date) {
         this.date = date;
     }
 
-    public static ArrayList<Description> getDescriptionArrayList() {
-        return descriptionArrayList;
-    }
-
     {
         id = count++;
     }
-
-    static {
-        descriptionArrayList = new ArrayList<>();
-        descriptionArrayList.add(Description.newDescription());
-        }
-
 
     public int getId() {
         return id;
@@ -42,14 +30,6 @@ public class Description implements Parcelable {
         this.name = name;
         this.description = description;
         this.date = date;
-    }
-
-    @SuppressLint("DefaultLocale")
-    public static Description newDescription (){
-        String name = "";
-        String description = "";
-       Calendar date = Calendar.getInstance();
-       return  new Description(name, description, date);
     }
 
     protected Description(Parcel in) {
@@ -102,5 +82,16 @@ public class Description implements Parcelable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    // переопределен метод equals, т.к. при считывании ArrayList с заметками через sharedPreference и последующем добавлении
+    // новых заметок могут совпадать id разных заметок
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof Description)) return false;
+
+       Description description1 = (Description) obj;
+        return this.name.equals(description1.name) && this.description.equals(description1.description) &&
+                this.id == description1.id && this.date.equals(description1.date);
     }
 }

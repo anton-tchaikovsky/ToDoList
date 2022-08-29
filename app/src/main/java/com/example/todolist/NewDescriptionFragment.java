@@ -19,6 +19,7 @@ public class NewDescriptionFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        //создаем view с полями для ввода названия и описания заметки и с календарем для выбора даты заметки
         View view = getLayoutInflater().inflate(R.layout.fragment_new_description,null);
         EditText newName = view.findViewById(R.id.new_name);
         EditText newDetails = view.findViewById(R.id.new_description);
@@ -31,7 +32,9 @@ public class NewDescriptionFragment extends DialogFragment {
                 .setView(view)
                 .setNegativeButton("Отмена", null)
                 .setPositiveButton("Создать", (dialogInterface, i) -> {
-                  Bundle bundle = new Bundle();
+                    // в bundle записываем название и описание заметки, дату заметки
+                    // если название или описание не введены или введены пробелы, то в bundle передаем ""
+                    Bundle bundle = new Bundle();
                   if (newName.getText().toString().equals(""))
                       bundle.putString("NEW_NAME", "");
                   else{
