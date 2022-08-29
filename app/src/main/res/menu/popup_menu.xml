@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/change"
+        android:title="@string/change">
+        <menu>
+
+            <item
+                android:id="@+id/change_name"
+                android:title="@string/change_name"/>
+            <item
+                android:id="@+id/change_description"
+                android:title="@string/change_description"/>
+            <item
+                android:id="@+id/change_date"
+                android:title="@string/change_date"/>
+        </menu>
+
+    </item>
+
+    <item
+    android:id="@+id/popup"
+    android:title="@string/delete"
+    />
+
+    <item
+        android:id="@+id/popupAll"
+        android:title="@string/delete_all"
+        />
+
+    <item
+        android:id="@+id/add"
+        android:title="@string/add"
+        />
+</menu>
